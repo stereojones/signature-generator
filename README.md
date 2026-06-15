@@ -1,36 +1,127 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Email Signature Generator
 
-## Getting Started
+Internal tool for creating HTML email signatures. Users pick a template, enter personal info, crop a circular headshot, and copy the resulting HTML into their email client.
 
-First, run the development server:
+## Features
+
+- 4-step wizard: template → info → headshot crop → copy HTML
+- Circular avatar crop with zoom and preview (client-side, uploaded as PNG)
+- Headshots hosted on GCS with permanent public URLs
+- Template system with placeholder HTML and iterative finalization workflow
+- Dev preview page at `/preview` for template QA with sample data
+
+## Local development
+
+### Prerequisites
+
+- Node.js 22+
+- A GCP project with a GCS bucket (for headshot uploads)
+- [Application Default Credentials](https://cloud.google.com/docs/authentication/application-default-credentials) configured locally
+
+### Setup
 
 ```bash
+npm install
+cp .env.example .env.local
+# Edit .env.local with your GCS bucket name
+gcloud auth application-default login
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000). Template preview: [http://localhost:3000/preview](http://localhost:3000/preview).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Environment variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Variable | Description |
+|----------|-------------|
+| `GCS_BUCKET_NAME` | GCS bucket for headshot uploads |
+| `GCP_PROJECT_ID` | GCP project ID (optional locally) |
 
-## Learn More
+## Templates
 
-To learn more about Next.js, take a look at the following resources:
+Templates live in [`templates/`](templates/):
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `template-{1..4}.html` — email-safe HTML with `{{placeholders}}` and `{{#field}}...{{/field}}` conditionals
+- [`config.ts`](templates/config.ts) — field definitions, headshot requirements, status
+- [`TEMPLATE_STATUS.md`](templates/TEMPLATE_STATUS.md) — finalization tracking
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Set `status: "finalized"` in config when a template is approved. In production, only finalized templates appear in the picker; dev shows all statuses.
 
-## Deploy on Vercel
+## GCP infrastructure (Terraform)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Infrastructure is defined in [`terraform/`](terraform/):
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- GCS bucket for headshots (public read on objects)
+- Artifact Registry for Docker images
+- Cloud Run service for the Next.js app
+- Workload Identity Federation for GitHub Actions
+
+### First-time bootstrap
+
+1. Create a GCP project and enable billing
+2. Copy `terraform/terraform.tfvars.example` to `terraform/terraform.tfvars` and fill in values
+3. Apply locally with owner/editor credentials:
+
+```bash
+cd terraform
+terraform init
+terraform apply
+```
+
+4. Note outputs: `cloud_run_url`, `gcs_bucket_name`, `wif_provider`, `deploy_service_account`
+
+### GitHub Actions setup
+
+Configure these **repository variables**:
+
+| Variable | Example |
+|----------|---------|
+| `GCP_PROJECT_ID` | `my-project-123` |
+| `GCP_REGION` | `us-central1` |
+
+Configure these **repository secrets**:
+
+| Secret | Description |
+|--------|-------------|
+| `WIF_PROVIDER` | Terraform output `wif_provider` |
+| `WIF_SERVICE_ACCOUNT` | Terraform output `deploy_service_account` |
+
+### Internal access (no login)
+
+Cloud Run is deployed with `--allow-unauthenticated=false`. Grant invoker access to your team:
+
+```bash
+gcloud run services add-iam-policy-binding signature-generator \
+  --region=us-central1 \
+  --member='group:engineering@yourcompany.com' \
+  --role='roles/run.invoker'
+```
+
+Or set `cloud_run_invokers` in Terraform.
+
+## CI/CD
+
+- **CI** ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)): lint, typecheck, tests, build, Docker build on PRs and pushes to `main`
+- **Deploy** ([`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)): Terraform apply + Docker push + Cloud Run deploy on push to `main`
+
+## Scripts
+
+```bash
+npm run dev      # Start dev server
+npm run build    # Production build
+npm run start    # Start production server
+npm run lint     # ESLint
+npm test         # Unit tests
+```
+
+## Headshot upload flow
+
+1. User selects a photo and crops it in a circular mask
+2. Client renders a 256×256 PNG via canvas
+3. Cropped blob is POSTed to `/api/upload`
+4. Server validates and writes to `gs://<bucket>/headshots/<uuid>.png`
+5. Public URL is embedded in the signature HTML
+
+## Template finalization
+
+See [`templates/TEMPLATE_STATUS.md`](templates/TEMPLATE_STATUS.md). Provide Figma frames or HTML exports; we iterate until each template passes visual and email-client QA, then mark it finalized.

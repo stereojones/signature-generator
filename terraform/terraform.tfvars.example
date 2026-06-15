@@ -1,0 +1,8 @@
+project_id = "your-gcp-project-id"
+region     = "us-central1"
+github_repo = "your-org/signature-generator"
+
+# Grant invoker access to internal users/groups (no public access)
+cloud_run_invokers = [
+  # "group:engineering@yourcompany.com",
+]
