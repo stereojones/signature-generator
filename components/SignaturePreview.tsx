@@ -2,7 +2,11 @@
 
 import { useMemo } from "react";
 
-import { prepareSignatureData, renderSignature } from "@/lib/renderSignature";
+import {
+  buildSignatureRenderData,
+  renderSignature,
+} from "@/lib/renderSignature";
+import { getSampleDataForSignature, type BrandId } from "@/templates/brands";
 import { getSampleDataForTemplate, SAMPLE_DATA } from "@/templates/config";
 
 function useAssetBaseUrl(): string {
@@ -23,11 +27,9 @@ export function SignaturePreview({
   data,
   className = "",
 }: SignaturePreviewProps) {
-  const baseUrl = useAssetBaseUrl();
   const rendered = useMemo(
-    () =>
-      renderSignature(html, prepareSignatureData({ ...data, baseUrl })),
-    [html, data, baseUrl],
+    () => renderSignature(html, data),
+    [html, data],
   );
 
   return (
@@ -39,23 +41,37 @@ export function SignaturePreview({
 
 export function SignaturePreviewSample({
   html,
+  brandId,
+  wantsHeadshot = false,
   templateId,
   className,
 }: {
   html: string;
+  brandId?: BrandId;
+  wantsHeadshot?: boolean;
   templateId?: string;
   className?: string;
 }) {
   const baseUrl = useAssetBaseUrl();
-  const sampleData = templateId
-    ? getSampleDataForTemplate(templateId, baseUrl)
-    : SAMPLE_DATA;
+
+  const data = useMemo(() => {
+    if (brandId) {
+      const sample = getSampleDataForSignature(brandId, wantsHeadshot, baseUrl);
+      return buildSignatureRenderData(sample, {
+        brandId,
+        headshotUrl: sample.headshotUrl,
+        baseUrl,
+      });
+    }
+
+    if (templateId) {
+      return getSampleDataForTemplate(templateId, baseUrl);
+    }
+
+    return { ...SAMPLE_DATA, baseUrl };
+  }, [brandId, wantsHeadshot, templateId, baseUrl]);
 
   return (
-    <SignaturePreview
-      html={html}
-      data={{ ...sampleData, baseUrl }}
-      className={className}
-    />
+    <SignaturePreview html={html} data={data} className={className} />
   );
 }

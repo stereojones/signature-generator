@@ -6,7 +6,9 @@ import {
 } from "@/lib/fieldFormat";
 import {
   CONTACT_FIELD_KEYS,
+  LOCATION_MAX_LENGTH,
   MAX_CONTACT_FIELDS,
+  MIN_CONTACT_FIELDS,
 } from "@/templates/config";
 
 const ALLOWED_MIME_TYPES = new Set(["image/png", "image/jpeg"]);
@@ -74,6 +76,13 @@ export function validateFormField(
     return null;
   }
 
+  if (fieldKey === "location") {
+    if (trimmed.length > LOCATION_MAX_LENGTH) {
+      return `Location must be ${LOCATION_MAX_LENGTH} characters or fewer`;
+    }
+    return null;
+  }
+
   return null;
 }
 
@@ -91,6 +100,10 @@ export function validateContactFieldLimit(
   formData: Record<string, string>,
 ): string | null {
   const count = countFilledContactFields(formData);
+  if (count < MIN_CONTACT_FIELDS) {
+    const needed = MIN_CONTACT_FIELDS - count;
+    return `Signatures require at least ${MIN_CONTACT_FIELDS} contact fields. Add ${needed} more field${needed === 1 ? "" : "s"} to continue.`;
+  }
   if (count > MAX_CONTACT_FIELDS) {
     const extra = count - MAX_CONTACT_FIELDS;
     return `Signatures support up to ${MAX_CONTACT_FIELDS} contact fields. Remove ${extra} filled field${extra === 1 ? "" : "s"} to continue.`;

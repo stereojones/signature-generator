@@ -1,0 +1,57 @@
+<table cellpadding="0" cellspacing="0" border="0" style="font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 12px; color: #000000; max-width: 600px;">
+  <tr>
+    <td width="60" valign="top" style="padding-right: 16px;">
+      <img src="{{baseUrl}}/assets/signatures/{{brandAssetPrefix}}-logomark.svg" alt="" width="60" height="60" style="display: block; border: 0; width: 60px; height: 60px; min-width: 60px; min-height: 60px;" />
+    </td>
+    <td valign="top" style="padding-right: 32px;">
+      <p style="margin: 0 0 4px 0; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 18px; font-weight: 600; line-height: normal; color: #000000;">{{fullName}}</p>
+      <p style="margin: 0 0 4px 0; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 12px; font-weight: 600; line-height: normal; color: #000000;">{{title}}</p>
+      <p style="margin: 0; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 12px; font-weight: 600; line-height: normal; color: #000000;">{{location}}</p>
+    </td>
+    <td valign="{{contactColumnValign}}">
+      <table cellpadding="0" cellspacing="0" border="0" style="font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 12px; color: #000000;">
+        {{#officePhone}}
+        <tr>
+          <td width="17" valign="middle" style="padding: 0 6px 4px 0; line-height: 0; font-size: 0;">
+            <img src="{{baseUrl}}/assets/signatures/{{brandAssetPrefix}}-icon-phone.svg" alt="" width="11" height="11" style="display: block; border: 0;" />
+          </td>
+          <td valign="middle" style="padding: 0 0 4px 0; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 12px; font-weight: 400; line-height: normal; white-space: nowrap; color: #000000;">Office {{officePhone}}</td>
+        </tr>
+        {{/officePhone}}
+        {{#cellPhone}}
+        <tr>
+          <td width="17" valign="middle" style="padding: 0 6px 4px 0; line-height: 0; font-size: 0;">
+            <img src="{{baseUrl}}/assets/signatures/{{brandAssetPrefix}}-icon-cell.svg" alt="" width="10" height="13" style="display: block; border: 0;" />
+          </td>
+          <td valign="middle" style="padding: 0 0 4px 0; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 12px; font-weight: 400; line-height: normal; white-space: nowrap; color: #000000;">Cell {{cellPhone}}</td>
+        </tr>
+        {{/cellPhone}}
+        {{#instagram}}
+        <tr>
+          <td width="17" valign="middle" style="padding: 0 6px 4px 0; line-height: 0; font-size: 0;">
+            <img src="{{baseUrl}}/assets/signatures/{{brandAssetPrefix}}-icon-instagram.svg" alt="" width="11" height="11" style="display: block; border: 0;" />
+          </td>
+          <td valign="middle" style="padding: 0 0 4px 0; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 12px; font-weight: 400; line-height: normal; white-space: nowrap; color: #000000;">
+            <a href="{{instagramHref}}" style="font-family: 'Outfit', Arial, Helvetica, sans-serif; color: #000000; text-decoration: none;">{{instagram}}</a>
+          </td>
+        </tr>
+        {{/instagram}}
+        {{#website}}
+        <tr>
+          <td width="17" valign="middle" style="padding: 0 6px 0 0; line-height: 0; font-size: 0;">
+            <img src="{{baseUrl}}/assets/signatures/{{brandAssetPrefix}}-icon-cursor.svg" alt="" width="10" height="10" style="display: block; border: 0;" />
+          </td>
+          <td valign="middle" style="padding: 0; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 12px; font-weight: 400; line-height: normal; white-space: nowrap; color: #000000;">
+            <a href="{{websiteHref}}" style="font-family: 'Outfit', Arial, Helvetica, sans-serif; color: #000000; text-decoration: none;">{{website}}</a>
+          </td>
+        </tr>
+        {{/website}}
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="3" style="padding-top: 20px;">
+      <p style="margin: 0; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 10px; font-weight: 400; line-height: normal; color: #808080;">This message may contain proprietary information, trade secrets, or protected health information (PHI). It is intended only for the named recipient(s). Any unauthorized review, use, disclosure, or distribution is prohibited. If you are not the intended recipient, stop reading, delete this message immediately, and notify the sender.</p>
+    </td>
+  </tr>
+</table>

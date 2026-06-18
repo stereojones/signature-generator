@@ -13,14 +13,14 @@ type StepHeadshotUploadProps = {
 type Phase = "pick" | "crop" | "uploading" | "done";
 
 export function StepHeadshotUpload({ onBack, onNext }: StepHeadshotUploadProps) {
-  const { selectedTemplate, setHeadshotUrl, state } = useWizard();
+  const { selectedSignature, setHeadshotUrl, state } = useWizard();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [phase, setPhase] = useState<Phase>(state.headshotUrl ? "done" : "pick");
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  const previewSize = selectedTemplate?.headshotSize?.width ?? 80;
+  const previewSize = selectedSignature?.headshotSize?.width ?? 80;
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

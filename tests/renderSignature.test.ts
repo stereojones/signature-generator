@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-import { escapeHtml, renderSignature } from "../lib/renderSignature";
+import {
+  buildSignatureRenderData,
+  escapeHtml,
+  renderSignature,
+} from "../lib/renderSignature";
 
 describe("escapeHtml", () => {
   it("escapes special characters", () => {
@@ -33,5 +37,28 @@ describe("renderSignature", () => {
     });
     assert.match(result, /no phone/);
     assert.doesNotMatch(result, /555/);
+  });
+});
+
+describe("buildSignatureRenderData", () => {
+  it("uses bottom valign when exactly two contact fields are filled", () => {
+    const data = buildSignatureRenderData(
+      {
+        officePhone: "6363294036",
+        website: "askamelia.com",
+      },
+      { brandId: "aesthetics" },
+    );
+    assert.equal(data.contactColumnValign, "bottom");
+    assert.equal(data.brandAssetPrefix, "aesthetics");
+  });
+
+  it("uses top valign when fewer than two contact fields are filled", () => {
+    const data = buildSignatureRenderData(
+      { officePhone: "6363294036" },
+      { brandId: "medspa" },
+    );
+    assert.equal(data.contactColumnValign, "top");
+    assert.equal(data.brandAssetPrefix, "medspa");
   });
 });

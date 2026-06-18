@@ -1,12 +1,15 @@
 import { Wizard } from "@/components/Wizard";
 import { WizardProvider } from "@/components/WizardContext";
-import { getAllTemplates } from "@/lib/templates";
+import { getAllSignatureVariants } from "@/lib/templates";
+import { getVisibleBrands } from "@/templates/brands";
 
 export default function Home() {
-  const templates = getAllTemplates(process.env.NODE_ENV === "development");
+  const includeDrafts = process.env.NODE_ENV === "development";
+  const brands = getVisibleBrands(includeDrafts);
+  const signatures = getAllSignatureVariants(includeDrafts);
 
   return (
-    <WizardProvider templates={templates}>
+    <WizardProvider brands={brands} signatures={signatures}>
       <main>
         <Wizard />
       </main>

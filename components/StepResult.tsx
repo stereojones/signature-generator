@@ -4,7 +4,10 @@ import { useMemo, useState } from "react";
 
 import { SignaturePreview } from "@/components/SignaturePreview";
 import { useWizard } from "@/components/WizardContext";
-import { prepareSignatureData, renderSignature } from "@/lib/renderSignature";
+import {
+  buildSignatureRenderData,
+  renderSignature,
+} from "@/lib/renderSignature";
 
 type StepResultProps = {
   onBack: () => void;
@@ -28,25 +31,23 @@ async function copyToClipboard(text: string): Promise<boolean> {
 }
 
 export function StepResult({ onBack }: StepResultProps) {
-  const { selectedTemplate, state, reset } = useWizard();
+  const { selectedSignature, selectedBrand, state, reset } = useWizard();
   const [copied, setCopied] = useState(false);
   const [showHtml, setShowHtml] = useState(false);
 
   const signatureData = useMemo(() => {
-    const data: Record<string, string> = {
-      ...state.formData,
+    if (!state.brandId) return {};
+    return buildSignatureRenderData(state.formData, {
+      brandId: state.brandId,
+      headshotUrl: state.headshotUrl,
       baseUrl: window.location.origin,
-    };
-    if (state.headshotUrl) {
-      data.headshotUrl = state.headshotUrl;
-    }
-    return prepareSignatureData(data);
-  }, [state.formData, state.headshotUrl]);
+    });
+  }, [state.brandId, state.formData, state.headshotUrl]);
 
   const renderedHtml = useMemo(() => {
-    if (!selectedTemplate) return "";
-    return renderSignature(selectedTemplate.html, signatureData);
-  }, [selectedTemplate, signatureData]);
+    if (!selectedSignature) return "";
+    return renderSignature(selectedSignature.html, signatureData);
+  }, [selectedSignature, signatureData]);
 
   const handleCopy = async () => {
     const success = await copyToClipboard(renderedHtml);
@@ -56,8 +57,8 @@ export function StepResult({ onBack }: StepResultProps) {
     }
   };
 
-  if (!selectedTemplate) {
-    return <p className="amelia-body">No template selected.</p>;
+  if (!selectedSignature || !selectedBrand) {
+    return <p className="amelia-body">No brand selected.</p>;
   }
 
   return (
@@ -71,7 +72,7 @@ export function StepResult({ onBack }: StepResultProps) {
       <div className="mt-6">
         <p className="amelia-label mb-2">Preview</p>
         <SignaturePreview
-          html={selectedTemplate.html}
+          html={selectedSignature.html}
           data={signatureData}
         />
       </div>

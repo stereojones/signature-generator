@@ -39,14 +39,17 @@ export const CONTACT_FIELD_KEYS = [
 export type ContactFieldKey = (typeof CONTACT_FIELD_KEYS)[number];
 
 export const MAX_CONTACT_FIELDS = 3;
+export const MIN_CONTACT_FIELDS = 2;
 
 export const CONTACT_FIELDS_NOTICE =
-  "Signatures can display up to 3 contact fields. Choose any combination of office phone, cell phone, website, and Instagram handle.";
+  "Signatures display 2–3 contact fields. Choose any combination of office phone, cell phone, website, and Instagram handle.";
+
+export const LOCATION_MAX_LENGTH = 80;
 
 const PROFILE_FIELDS: TemplateField[] = [
   { key: "fullName", label: "Full Name", required: true, placeholder: "Michelle Roughton, MD" },
   { key: "title", label: "Job Title", required: true, placeholder: "Board Certified Plastic Surgeon" },
-  { key: "location", label: "Location", required: true, placeholder: "Amelia Aesthetics Raleigh" },
+  { key: "location", label: "Location", required: true, placeholder: "Start typing to see locations" },
 ];
 
 const CONTACT_FIELDS: TemplateField[] = [

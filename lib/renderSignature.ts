@@ -1,3 +1,14 @@
+import { OUTFIT_STYLE_BLOCK } from "@/templates/config";
+import {
+  formatPhoneNumber,
+  normalizeInstagramDisplay,
+  normalizeInstagramHref,
+  normalizeWebsiteDisplay,
+  normalizeWebsiteHref,
+} from "@/lib/fieldFormat";
+import { getBrandAssetPrefix, type BrandId } from "@/templates/brands";
+import { countFilledContactFields } from "@/lib/validation";
+
 const HTML_ESCAPE_MAP: Record<string, string> = {
   "&": "&amp;",
   "<": "&lt;",
@@ -62,6 +73,29 @@ export function prepareSignatureData(
   return result;
 }
 
+export function buildSignatureRenderData(
+  formData: Record<string, string>,
+  options: {
+    brandId: BrandId;
+    headshotUrl?: string | null;
+    baseUrl?: string;
+  },
+): Record<string, string> {
+  const baseUrl = options.baseUrl ?? formData.baseUrl ?? "";
+  const withHeadshot = options.headshotUrl
+    ? { ...formData, headshotUrl: options.headshotUrl, baseUrl }
+    : { ...formData, baseUrl };
+
+  const prepared = prepareSignatureData(withHeadshot);
+  const contactCount = countFilledContactFields(prepared);
+
+  return {
+    ...prepared,
+    brandAssetPrefix: getBrandAssetPrefix(options.brandId),
+    contactColumnValign: contactCount === 2 ? "bottom" : "top",
+  };
+}
+
 function processConditionals(
   html: string,
   data: Record<string, string>,
@@ -82,15 +116,6 @@ function processConditionals(
 
   return result;
 }
-
-import { OUTFIT_STYLE_BLOCK } from "@/templates/config";
-import {
-  formatPhoneNumber,
-  normalizeInstagramDisplay,
-  normalizeInstagramHref,
-  normalizeWebsiteDisplay,
-  normalizeWebsiteHref,
-} from "@/lib/fieldFormat";
 
 function replacePlaceholders(
   html: string,

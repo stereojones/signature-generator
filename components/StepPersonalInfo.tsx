@@ -12,7 +12,9 @@ import {
 import {
   CONTACT_FIELD_KEYS,
   CONTACT_FIELDS_NOTICE,
+  LOCATION_MAX_LENGTH,
   MAX_CONTACT_FIELDS,
+  MIN_CONTACT_FIELDS,
   type FieldType,
   type TemplateField,
 } from "@/templates/config";
@@ -35,15 +37,15 @@ function isContactField(field: TemplateField): boolean {
 }
 
 export function StepPersonalInfo({ onBack, onNext }: StepPersonalInfoProps) {
-  const { selectedTemplate, state, updateField } = useWizard();
+  const { selectedSignature, selectedBrand, state, updateField } = useWizard();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [contactLimitError, setContactLimitError] = useState<string | null>(
     null,
   );
 
   const fields = useMemo(
-    () => selectedTemplate?.fields ?? [],
-    [selectedTemplate],
+    () => selectedSignature?.fields ?? [],
+    [selectedSignature],
   );
 
   const profileFields = useMemo(
@@ -55,6 +57,8 @@ export function StepPersonalInfo({ onBack, onNext }: StepPersonalInfoProps) {
     () => fields.filter((field) => isContactField(field)),
     [fields],
   );
+
+  const locationSuggestions = selectedBrand?.locationSuggestions ?? [];
 
   const filledContactCount = useMemo(
     () => countFilledContactFields(state.formData),
@@ -115,45 +119,63 @@ export function StepPersonalInfo({ onBack, onNext }: StepPersonalInfoProps) {
     if (type === "instagram" || key === "instagram") {
       return "Handle only — @ and instagram.com are removed automatically";
     }
+    if (key === "location") {
+      return "Choose a suggested location or enter your own";
+    }
     return null;
   };
 
-  const renderField = (field: TemplateField) => (
-    <div key={field.key}>
-      <label htmlFor={field.key} className="amelia-label">
-        {field.label}
-        {field.required && <span className="text-error"> *</span>}
-      </label>
-      <input
-        id={field.key}
-        type={getHtmlInputType(field.type)}
-        inputMode={field.type === "url" ? "url" : undefined}
-        value={state.formData[field.key] ?? ""}
-        onChange={(e) => updateField(field.key, e.target.value)}
-        onBlur={(e) => handleBlur(field.key, e.target.value)}
-        placeholder={field.placeholder}
-        className={`input-field ${
-          errors[field.key] ? "input-field-error" : ""
-        }`}
-      />
-      {fieldHint(field.type, field.key) && !errors[field.key] && (
-        <p className="amelia-helper mt-1">{fieldHint(field.type, field.key)}</p>
-      )}
-      {errors[field.key] && (
-        <p className="mt-1 text-xs text-error">{errors[field.key]}</p>
-      )}
-    </div>
-  );
+  const renderField = (field: TemplateField) => {
+    const isLocation = field.key === "location";
 
-  if (!selectedTemplate) {
-    return <p className="amelia-body">Please select a template first.</p>;
+    return (
+      <div key={field.key}>
+        <label htmlFor={field.key} className="amelia-label">
+          {field.label}
+          {field.required && <span className="text-error"> *</span>}
+        </label>
+        <input
+          id={field.key}
+          type={getHtmlInputType(field.type)}
+          inputMode={field.type === "url" ? "url" : undefined}
+          list={isLocation ? "location-suggestions" : undefined}
+          maxLength={isLocation ? LOCATION_MAX_LENGTH : undefined}
+          value={state.formData[field.key] ?? ""}
+          onChange={(e) => updateField(field.key, e.target.value)}
+          onBlur={(e) => handleBlur(field.key, e.target.value)}
+          placeholder={field.placeholder}
+          className={`input-field ${
+            errors[field.key] ? "input-field-error" : ""
+          }`}
+        />
+        {isLocation && locationSuggestions.length > 0 && (
+          <datalist id="location-suggestions">
+            {locationSuggestions.map((location) => (
+              <option key={location} value={location} />
+            ))}
+          </datalist>
+        )}
+        {fieldHint(field.type, field.key) && !errors[field.key] && (
+          <p className="amelia-helper mt-1">
+            {fieldHint(field.type, field.key)}
+          </p>
+        )}
+        {errors[field.key] && (
+          <p className="mt-1 text-xs text-error">{errors[field.key]}</p>
+        )}
+      </div>
+    );
+  };
+
+  if (!selectedSignature || !selectedBrand) {
+    return <p className="amelia-body">Please select a brand first.</p>;
   }
 
   return (
     <div>
       <h2 className="amelia-heading-4">Your information</h2>
       <p className="amelia-body mt-1">
-        Enter the details for your {selectedTemplate.name} signature.
+        Enter the details for your {selectedBrand.name} signature.
       </p>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-6">
@@ -165,12 +187,14 @@ export function StepPersonalInfo({ onBack, onNext }: StepPersonalInfoProps) {
             <p className="amelia-body mt-1">{CONTACT_FIELDS_NOTICE}</p>
             <p
               className={`amelia-helper mt-2 ${
+                filledContactCount < MIN_CONTACT_FIELDS ||
                 filledContactCount > MAX_CONTACT_FIELDS
                   ? "text-error"
                   : ""
               }`}
             >
-              {filledContactCount} of {MAX_CONTACT_FIELDS} contact fields used
+              {filledContactCount} of {MIN_CONTACT_FIELDS}–{MAX_CONTACT_FIELDS}{" "}
+              contact fields used
             </p>
           </div>
 
