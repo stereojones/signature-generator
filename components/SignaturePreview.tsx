@@ -20,12 +20,15 @@ type SignaturePreviewProps = {
   html: string;
   data: Record<string, string>;
   className?: string;
+  /** White background for copy-friendly preview (e.g. Outlook). */
+  copyable?: boolean;
 };
 
 export function SignaturePreview({
   html,
   data,
   className = "",
+  copyable = false,
 }: SignaturePreviewProps) {
   const rendered = useMemo(
     () => renderSignature(html, data),
@@ -33,7 +36,9 @@ export function SignaturePreview({
   );
 
   return (
-    <div className={`preview-panel ${className}`}>
+    <div
+      className={`preview-panel ${copyable ? "preview-panel-copyable" : ""} ${className}`}
+    >
       <div dangerouslySetInnerHTML={{ __html: rendered }} />
     </div>
   );

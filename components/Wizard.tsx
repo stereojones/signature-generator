@@ -10,7 +10,7 @@ const STEP_LABELS = [
   { step: 1 as const, label: "Brand" },
   { step: 2 as const, label: "Your Info" },
   { step: 3 as const, label: "Headshot" },
-  { step: 4 as const, label: "Copy HTML" },
+  { step: 4 as const, label: "Copy signature" },
 ];
 
 export function Wizard() {
