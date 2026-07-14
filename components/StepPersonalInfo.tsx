@@ -119,6 +119,9 @@ export function StepPersonalInfo({ onBack, onNext }: StepPersonalInfoProps) {
     if (type === "instagram" || key === "instagram") {
       return "Handle only — @ and instagram.com are removed automatically";
     }
+    if (type === "email" || key === "email") {
+      return "Stored in lowercase for consistency";
+    }
     if (key === "location") {
       return "Choose a suggested location or enter your own";
     }

@@ -1,7 +1,10 @@
-import type { TemplateField, TemplateStatus } from "@/templates/config";
+import { limitSampleContactFields } from "@/lib/sampleData";
+import { countFilledContactFields } from "@/lib/validation";
 import {
   SAMPLE_DATA,
   SAMPLE_HEADSHOT_PATH,
+  type TemplateField,
+  type TemplateStatus,
 } from "@/templates/config";
 
 export type BrandId = "aesthetics" | "medspa" | "health" | "hq";
@@ -69,6 +72,8 @@ export const brands: BrandConfig[] = [
     sampleDataOverrides: {
       fullName: "Juliana Zimmerman",
       title: "Content Editor",
+      email: "juliana@ameliahq.com",
+      emailHref: "mailto:juliana@ameliahq.com",
       instagram: "amelia.aesthetics",
       website: "ameliahq.com",
       officePhone: "",
@@ -127,12 +132,15 @@ export function getSampleDataForSignature(
     ...(brand?.sampleDataOverrides ?? {}),
     baseUrl,
     brandAssetPrefix: getBrandAssetPrefix(brandId),
-    contactColumnValign: "top",
   };
 
   if (wantsHeadshot && baseUrl) {
     data.headshotUrl = `${baseUrl}${SAMPLE_HEADSHOT_PATH}`;
   }
 
-  return data;
+  const limited = limitSampleContactFields(data);
+  const contactCount = countFilledContactFields(limited);
+  limited.contactColumnValign = contactCount === 2 ? "bottom" : "top";
+
+  return limited;
 }

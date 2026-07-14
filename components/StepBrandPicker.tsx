@@ -61,15 +61,14 @@ export function StepBrandPicker({ onNext }: StepBrandPickerProps) {
                   <p className="amelia-heading-4">{brand.name}</p>
                   <p className="amelia-helper mt-0.5">{brand.description}</p>
                 </div>
-                <div className="flex shrink-0 items-center gap-2">
-                  {brand.status !== "finalized" && (
-                    <span className="amelia-badge amelia-badge-neutral">
-                      {brand.status}
-                    </span>
-                  )}
-                  {isSelected && (
+                <div className="flex shrink-0 items-center">
+                  {isSelected ? (
                     <span className="amelia-badge amelia-badge-selected">
                       Selected
+                    </span>
+                  ) : (
+                    <span className="amelia-badge amelia-badge-neutral">
+                      Select
                     </span>
                   )}
                 </div>

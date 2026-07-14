@@ -1,5 +1,7 @@
 export const OUTFIT_FONT_IMPORT = `@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&display=swap');`;
 
+import { limitSampleContactFields } from "@/lib/sampleData";
+
 export const OUTFIT_FONT_FAMILY = "'Outfit', Arial, Helvetica, sans-serif";
 
 export const OUTFIT_STYLE_BLOCK = `<style type="text/css">${OUTFIT_FONT_IMPORT}</style>`;
@@ -32,6 +34,7 @@ export type TemplateConfig = {
 export const CONTACT_FIELD_KEYS = [
   "officePhone",
   "cellPhone",
+  "email",
   "website",
   "instagram",
 ] as const;
@@ -42,7 +45,7 @@ export const MAX_CONTACT_FIELDS = 3;
 export const MIN_CONTACT_FIELDS = 2;
 
 export const CONTACT_FIELDS_NOTICE =
-  "Signatures display 2–3 contact fields. Choose any combination of office phone, cell phone, website, and Instagram handle.";
+  "Signatures display 2–3 contact fields. Choose any combination of office phone, cell phone, email, website, and Instagram handle.";
 
 export const LOCATION_MAX_LENGTH = 80;
 
@@ -55,6 +58,7 @@ const PROFILE_FIELDS: TemplateField[] = [
 const CONTACT_FIELDS: TemplateField[] = [
   { key: "officePhone", label: "Office Phone", type: "tel", placeholder: "(636) 329-4036" },
   { key: "cellPhone", label: "Cell Phone", type: "tel", placeholder: "(314) 687-8249" },
+  { key: "email", label: "Email Address", type: "email", placeholder: "name@askamelia.com" },
   { key: "website", label: "Website", type: "url", placeholder: "askamelia.com" },
   { key: "instagram", label: "Instagram Handle", type: "instagram", placeholder: "amelia.aesthetics" },
 ];
@@ -115,7 +119,9 @@ export const SAMPLE_DATA: Record<string, string> = {
   title: "Board Certified Plastic Surgeon",
   location: "Amelia Aesthetics Raleigh",
   officePhone: "(636) 329-4036",
-  cellPhone: "(314) 687-8249",
+  cellPhone: "",
+  email: "mroughton@askamelia.com",
+  emailHref: "mailto:mroughton@askamelia.com",
   website: "askamelia.com",
   websiteHref: "https://askamelia.com",
   headshotUrl: "",
@@ -127,6 +133,8 @@ export const TEMPLATE_SAMPLE_OVERRIDES: Record<string, Record<string, string>> =
     fullName: "Juliana Zimmerman",
     title: "Content Editor",
     location: "Amelia HQ",
+    email: "juliana@ameliahq.com",
+    emailHref: "mailto:juliana@ameliahq.com",
     instagram: "amelia.aesthetics",
     instagramHref: "https://instagram.com/amelia.aesthetics",
     website: "ameliahq.com",
@@ -140,10 +148,10 @@ export function getSampleDataForTemplate(
   templateId: string,
   baseUrl = "",
 ): Record<string, string> {
-  const data = {
+  const data = limitSampleContactFields({
     ...SAMPLE_DATA,
     ...(TEMPLATE_SAMPLE_OVERRIDES[templateId] ?? {}),
-  };
+  });
 
   const template = templates.find((t) => t.id === templateId);
   if (template?.requiresHeadshot && baseUrl) {

@@ -5,6 +5,8 @@ import {
   formatPhoneNumber,
   isValidPhoneNumber,
   isValidWebsite,
+  normalizeEmailDisplay,
+  normalizeEmailHref,
   normalizeInstagramDisplay,
   normalizeWebsiteDisplay,
   normalizeWebsiteHref,
@@ -58,6 +60,13 @@ describe("normalizeInstagramDisplay", () => {
   });
 });
 
+describe("normalizeEmail", () => {
+  it("normalizes display and mailto href", () => {
+    assert.equal(normalizeEmailDisplay(" Name@Example.COM "), "name@example.com");
+    assert.equal(normalizeEmailHref("name@example.com"), "mailto:name@example.com");
+  });
+});
+
 describe("validateFormField", () => {
   it("accepts website domains without protocol", () => {
     assert.equal(validateFormField("askamelia.com", false, "url", "website"), null);
@@ -107,12 +116,15 @@ describe("prepareSignatureData", () => {
     const prepared = prepareSignatureData({
       officePhone: "6363294036",
       cellPhone: "3146878249",
+      email: "Name@Example.COM",
       website: "https://www.askamelia.com",
       instagram: "@amelia.aesthetics",
     });
 
     assert.equal(prepared.officePhone, "(636) 329-4036");
     assert.equal(prepared.cellPhone, "(314) 687-8249");
+    assert.equal(prepared.email, "name@example.com");
+    assert.equal(prepared.emailHref, "mailto:name@example.com");
     assert.equal(prepared.website, "askamelia.com");
     assert.equal(prepared.websiteHref, "https://askamelia.com");
     assert.equal(prepared.instagram, "amelia.aesthetics");

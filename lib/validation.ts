@@ -55,6 +55,10 @@ export function validateFormField(
     return "Enter a valid email address";
   }
 
+  if (type === "email" || fieldKey === "email") {
+    return null;
+  }
+
   if (type === "tel" || fieldKey === "officePhone" || fieldKey === "cellPhone") {
     if (!isValidPhoneNumber(trimmed)) {
       return "Enter a 10-digit US phone number";

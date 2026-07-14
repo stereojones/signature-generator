@@ -26,6 +26,16 @@
           <td valign="middle" style="padding: 0 0 4px 0; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 12px; font-weight: 400; line-height: normal; white-space: nowrap; color: #000000;">Cell {{cellPhone}}</td>
         </tr>
         {{/cellPhone}}
+        {{#email}}
+        <tr>
+          <td width="17" valign="middle" style="padding: 0 6px 4px 0; line-height: 0; font-size: 0;">
+            <img src="{{baseUrl}}/assets/signatures/medspa-icon-email.svg" alt="" width="11" height="11" style="display: block; border: 0;" />
+          </td>
+          <td valign="middle" style="padding: 0 0 4px 0; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 12px; font-weight: 400; line-height: normal; white-space: nowrap; color: #000000;">
+            <a href="{{emailHref}}" style="font-family: 'Outfit', Arial, Helvetica, sans-serif; color: #000000; text-decoration: none;">{{email}}</a>
+          </td>
+        </tr>
+        {{/email}}
         {{#instagram}}
         <tr>
           <td width="17" valign="middle" style="padding: 0 6px 4px 0; line-height: 0; font-size: 0;">

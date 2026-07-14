@@ -97,6 +97,16 @@ export function isValidInstagramHandle(value: string): boolean {
   return INSTAGRAM_HANDLE.test(handle);
 }
 
+export function normalizeEmailDisplay(value: string): string {
+  return value.trim().toLowerCase();
+}
+
+export function normalizeEmailHref(value: string): string {
+  const email = normalizeEmailDisplay(value);
+  if (!email) return "";
+  return `mailto:${email}`;
+}
+
 export function formatFieldForSignature(
   key: string,
   value: string,
@@ -116,6 +126,10 @@ export function formatFieldForSignature(
     return normalizeInstagramDisplay(trimmed);
   }
 
+  if (key === "email") {
+    return normalizeEmailDisplay(trimmed);
+  }
+
   return trimmed;
 }
 
@@ -133,6 +147,10 @@ export function formatFieldForValidation(key: string, value: string): string {
 
   if (key === "instagram") {
     return normalizeInstagramDisplay(trimmed);
+  }
+
+  if (key === "email") {
+    return normalizeEmailDisplay(trimmed);
   }
 
   return trimmed;

@@ -1,6 +1,8 @@
 import { OUTFIT_STYLE_BLOCK } from "@/templates/config";
 import {
   formatPhoneNumber,
+  normalizeEmailDisplay,
+  normalizeEmailHref,
   normalizeInstagramDisplay,
   normalizeInstagramHref,
   normalizeWebsiteDisplay,
@@ -70,6 +72,12 @@ export function prepareSignatureData(
     result.instagramHref = normalizeInstagramHref(instagram);
   }
 
+  const email = getFieldValue(data, "email");
+  if (email) {
+    result.email = normalizeEmailDisplay(email);
+    result.emailHref = normalizeEmailHref(email);
+  }
+
   return result;
 }
 
@@ -127,6 +135,7 @@ function replacePlaceholders(
       key === "headshotUrl" ||
       key === "websiteHref" ||
       key === "instagramHref" ||
+      key === "emailHref" ||
       key === "baseUrl"
     ) {
       return escapeHtml(sanitizeUrl(value) || value);
