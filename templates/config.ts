@@ -112,7 +112,7 @@ export const templates: TemplateConfig[] = [
   },
 ];
 
-export const SAMPLE_HEADSHOT_PATH = "/assets/signatures/sample-headshot.svg";
+export const SAMPLE_HEADSHOT_PATH = "/assets/signatures/sample-headshot.png";
 
 export const SAMPLE_DATA: Record<string, string> = {
   fullName: "Michelle Roughton, MD",
