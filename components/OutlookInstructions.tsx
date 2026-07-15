@@ -10,13 +10,14 @@ export function OutlookInstructions({ open }: OutlookInstructionsProps) {
   return (
     <div className="mt-4 border-t border-border pt-4">
       <p className="amelia-body">
-        Outlook does not accept raw HTML. Use the formatted copy button above,
-        then paste into Outlook&apos;s signature editor.
+        Use the <strong>Copy Signature</strong>{" "}
+        button above, then paste into
+        Outlook&apos;s signature editor.
       </p>
 
       <ol className="amelia-body mt-4 list-decimal space-y-3 pl-5">
         <li>
-          Click <strong>Copy for Outlook</strong> on this page.
+          Click <strong>Copy Signature</strong> on this page.
         </li>
         <li>
           Open Outlook and go to your signature settings:

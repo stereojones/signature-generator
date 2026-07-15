@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 
+import { GmailInstructions } from "@/components/GmailInstructions";
 import { OutlookInstructions } from "@/components/OutlookInstructions";
 import { SignaturePreview } from "@/components/SignaturePreview";
 import { useWizard } from "@/components/WizardContext";
@@ -18,13 +19,14 @@ type StepResultProps = {
   onBack: () => void;
 };
 
-type CopyFeedback = "html" | "outlook" | null;
+type CopyFeedback = "html" | "signature" | null;
 
 export function StepResult({ onBack }: StepResultProps) {
   const { selectedSignature, selectedBrand, state, reset } = useWizard();
   const [copied, setCopied] = useState<CopyFeedback>(null);
   const [showHtml, setShowHtml] = useState(false);
   const [showOutlookInstructions, setShowOutlookInstructions] = useState(false);
+  const [showGmailInstructions, setShowGmailInstructions] = useState(false);
 
   const signatureData = useMemo(() => {
     if (!state.brandId) return {};
@@ -50,9 +52,9 @@ export function StepResult({ onBack }: StepResultProps) {
     if (success) showCopyFeedback("html");
   };
 
-  const handleCopyForOutlook = async () => {
+  const handleCopySignature = async () => {
     const success = await copySignatureForOutlook(renderedHtml);
-    if (success) showCopyFeedback("outlook");
+    if (success) showCopyFeedback("signature");
   };
 
   if (!selectedSignature || !selectedBrand) {
@@ -77,18 +79,18 @@ export function StepResult({ onBack }: StepResultProps) {
 
       <div className="mt-6 space-y-4">
         <div className="rounded-[4px] border border-border bg-surface p-4">
-          <p className="amelia-label">Microsoft Outlook</p>
+          <p className="amelia-label">Outlook and Gmail</p>
           <p className="amelia-body mt-1">
-            Outlook does not accept HTML source. Copy the formatted signature
-            below, then paste into Outlook&apos;s signature editor.
+            Copy the formatted signature below, then paste into your email
+            client&apos;s signature editor.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             <button
               type="button"
-              onClick={handleCopyForOutlook}
+              onClick={handleCopySignature}
               className="btn-primary"
             >
-              {copied === "outlook" ? "Copied!" : "Copy for Outlook"}
+              {copied === "signature" ? "Copied!" : "Copy Signature"}
             </button>
             <button
               type="button"
@@ -99,15 +101,24 @@ export function StepResult({ onBack }: StepResultProps) {
                 ? "Hide Outlook instructions"
                 : "View instructions for Microsoft Outlook"}
             </button>
+            <button
+              type="button"
+              onClick={() => setShowGmailInstructions((v) => !v)}
+              className="btn-secondary"
+            >
+              {showGmailInstructions
+                ? "Hide Gmail instructions"
+                : "View instructions for Gmail"}
+            </button>
           </div>
           <OutlookInstructions open={showOutlookInstructions} />
+          <GmailInstructions open={showGmailInstructions} />
         </div>
 
         <div className="rounded-[4px] border border-border bg-surface p-4">
-          <p className="amelia-label">Gmail and other clients</p>
+          <p className="amelia-label">Front and other clients</p>
           <p className="amelia-body mt-1">
-            Gmail, Apple Mail, and similar clients can use the HTML source
-            directly.
+            Front and similar clients can use the HTML source directly.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             <button
